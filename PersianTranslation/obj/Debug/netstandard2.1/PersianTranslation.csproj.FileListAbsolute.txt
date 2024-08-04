@@ -1,0 +1,11 @@
+W:\IdentitySample\PersianTranslation\bin\Debug\netstandard2.1\PersianTranslation.deps.json
+W:\IdentitySample\PersianTranslation\bin\Debug\netstandard2.1\PersianTranslation.dll
+W:\IdentitySample\PersianTranslation\bin\Debug\netstandard2.1\PersianTranslation.pdb
+W:\IdentitySample\PersianTranslation\obj\Debug\netstandard2.1\PersianTranslation.csproj.AssemblyReference.cache
+W:\IdentitySample\PersianTranslation\obj\Debug\netstandard2.1\PersianTranslation.GeneratedMSBuildEditorConfig.editorconfig
+W:\IdentitySample\PersianTranslation\obj\Debug\netstandard2.1\PersianTranslation.AssemblyInfoInputs.cache
+W:\IdentitySample\PersianTranslation\obj\Debug\netstandard2.1\PersianTranslation.AssemblyInfo.cs
+W:\IdentitySample\PersianTranslation\obj\Debug\netstandard2.1\PersianTranslation.csproj.CoreCompileInputs.cache
+W:\IdentitySample\PersianTranslation\obj\Debug\netstandard2.1\PersianTranslation.sourcelink.json
+W:\IdentitySample\PersianTranslation\obj\Debug\netstandard2.1\PersianTranslation.dll
+W:\IdentitySample\PersianTranslation\obj\Debug\netstandard2.1\PersianTranslation.pdb
