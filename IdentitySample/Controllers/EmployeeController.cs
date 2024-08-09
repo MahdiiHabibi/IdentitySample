@@ -2,14 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentitySample.Authorization.ClaimBasedAuthorization.Attributes;
+using IdentitySample.Authorization.ClaimBasedAuthorization.MvcUserAccessClaims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using IdentitySample.Models;
 using IdentitySample.Models.Context;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IdentitySample.Controllers
 {
+    //[Authorize(Roles = "Owner")]
+    //[AllowAnonymous]
+    //[Authorize(Policy = "DynamicRole")]
     public class EmployeeController : Controller
     {
         private readonly AppDbContext _context;
@@ -20,12 +26,19 @@ namespace IdentitySample.Controllers
         }
 
         // GET: Employee
+        //[AllowAnonymous]
+        //[Authorize(Roles = "Admin")]
+        //[Authorize(Policy = "EmployeeListPolicy")]
+        // [Authorize(Policy = "ClaimOrRole")]
+        //[Authorize(Policy = "ClaimRequirement")]
+        [ClaimBasedAuthorization(EmployeeControllerClaimValues.EmployeeIndex)]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Employees.ToListAsync());
         }
 
         // GET: Employee/Details/5
+        [ClaimBasedAuthorization(EmployeeControllerClaimValues.EmployeeDetails)]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

@@ -1,6 +1,14 @@
 using System;
+using IdentitySample.Authorization.ClaimBasedAuthorization;
+using IdentitySample.Models;
 using IdentitySample.Models.Context;
 using IdentitySample.Repositories;
+using IdentitySample.Security.Default;
+using IdentitySample.Security.DynamicRole;
+using IdentitySample.Security.PhoneTotp;
+using IdentitySample.Security.PhoneTotp.Providers;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -39,7 +47,7 @@ namespace IdentitySample
                     options.ClientSecret = "W_xZMX7Mz1hwHcgL-J8eST7A";
                 });
 
-            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                 {
                     options.Password.RequiredUniqueChars = 0;
 
@@ -53,7 +61,48 @@ namespace IdentitySample
                 .AddDefaultTokenProviders()
                 .AddErrorDescriber<PersianIdentityErrorDescriber>();
 
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.AccessDeniedPath = "/Account/AccessDenied";
+                //options.Cookie.Name = "IdentityProj";
+                options.LoginPath = "/Account/Login";
+                options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+            });
+
+            services.Configure<SecurityStampValidatorOptions>(option =>
+            {
+                // option.ValidationInterval = TimeSpan.FromSeconds(15);
+            });
+
+            services.AddAuthorization(option =>
+            {
+                option.AddPolicy("EmployeeListPolicy", policy => policy
+                        .RequireClaim(ClaimTypesStore.EmployeeList, false.ToString(), true.ToString()));
+
+                option.AddPolicy("ClaimOrRole", policy =>
+                     policy.RequireAssertion(ClaimOrRole));
+
+                option.AddPolicy("ClaimRequirement", policy =>
+                     policy.Requirements.Add(new ClaimRequirement(ClaimTypesStore.EmployeeList, true.ToString())));
+
+                option.AddPolicy("DynamicRole", policy =>
+                    policy.Requirements.Add(new DynamicRoleRequirement()));
+            });
+
+            services.AddMemoryCache();
+            services.AddHttpContextAccessor();
+            services.AddTransient<IUtilities, Utilities>();
             services.AddScoped<IMessageSender, MessageSender>();
+            services.AddScoped<IAuthorizationHandler, DynamicRoleHandler>();
+            services.AddSingleton<IAuthorizationHandler, ClaimHandler>();
+
+            services.AddTransient<IPhoneTotpProvider, PhoneTotpProvider>();
+            services.Configure<PhoneTotpOptions>(options =>
+            {
+                options.StepInSeconds = 30;
+            });
+
+            services.AddClaimBasedAuthorization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,5 +133,11 @@ namespace IdentitySample
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
+
+        private bool ClaimOrRole(AuthorizationHandlerContext context)
+            => context.User.HasClaim(ClaimTypesStore.EmployeeList, true.ToString()) ||
+               context.User.IsInRole("Admin");
+
     }
 }
